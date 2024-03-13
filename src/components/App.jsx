@@ -1,29 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import {React, useEffect} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { loadContacts } from "../redux/createSlice";
+import { persistor } from "../redux/store";
 import { nanoid } from 'nanoid';
 import { Form } from './Form/Form';
 import { Search } from './Search/Search';
 import { ContactList } from './ContactList/ContactList';
+import { setFilter, addContact, deleteContact  } from '../redux/createSlice';
 
 export const App = () => {
-  const[filter, setFilter] = useState('');
-
-  const [contacts, setContacts] = useState(() => {
-    const storedContacts = localStorage.getItem('contacts');
-    return storedContacts ? JSON.parse(storedContacts) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  const filterValue = useSelector((state) => state.filter);
+  const contacts = useSelector((state) => state.contacts);
+  const dispatch = useDispatch();
 
   const handleAddContact = (name, number) => {
     if (name.trim() === '' || number.trim() === '') {
       alert('Please enter both the contact name and phone number.');
-      return;
-    }
-
-    if (contacts.some((contact) => contact.name.toLowerCase() === name.trim().toLowerCase())) {
-      alert('Contact with this name already exists!');
       return;
     }
 
@@ -33,26 +25,30 @@ export const App = () => {
       number: number.trim(),
     };
 
-    setContacts((prevContacts) => [...prevContacts, newContact]);
+    dispatch(addContact(newContact));
   };
 
   const handleFilterChange = (event) => {
-    setFilter(event.target.value.toLowerCase());
+    dispatch(setFilter(event.target.value.toLowerCase()));
   };
 
-  const handleDeleteContact = (id) => {
-    setContacts((prevContacts) => prevContacts.filter((contact) => contact.id !== id));
-  };
+  const filteredContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filterValue)
+  );
 
-  const filteredContacts = contacts.filter((contact) => contact.name.toLowerCase().includes(filter));
+  useEffect(() => {
+    const persistedContacts = persistor.getState().contacts; // Get persisted contacts
+    dispatch(loadContacts(persistedContacts)); // Dispatch the loadContacts action
+  }, [dispatch]);
+
 
   return (
     <div>
       <h1>Phonebook</h1>
       <Form handleAddContact={handleAddContact} />
       <h2>Contacts</h2>
-      <Search filter={filter} onFilterChange={handleFilterChange} />
-      <ContactList contacts={filteredContacts} onDeleteContact={handleDeleteContact} />
+      <Search filter={filterValue} onFilterChange={handleFilterChange} />
+      <ContactList contacts={filteredContacts} onDeleteContact={deleteContact} />
     </div>
   );
 };
