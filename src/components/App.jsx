@@ -1,46 +1,34 @@
-import {React, useEffect} from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { loadContacts } from "../redux/createSlice";
-import { persistor } from "../redux/store";
-import { nanoid } from 'nanoid';
 import { Form } from './Form/Form';
 import { Search } from './Search/Search';
 import { ContactList } from './ContactList/ContactList';
-import { setFilter, addContact, deleteContact  } from '../redux/createSlice';
+import { addContact, deleteContact } from '../redux/contactSlice';
+import { setFilter, selectFilter } from '../redux/filterSlice';
 
 export const App = () => {
-  const filterValue = useSelector((state) => state.filter);
-  const contacts = useSelector((state) => state.contacts);
+  const filterValue = useSelector(selectFilter);
+  // Define a selector for selecting contacts
+  const selectContacts = (state) => state.contacts.items;
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
 
   const handleAddContact = (name, number) => {
-    if (name.trim() === '' || number.trim() === '') {
-      alert('Please enter both the contact name and phone number.');
-      return;
-    }
-
-    const newContact = {
-      id: nanoid(),
-      name: name.trim(),
-      number: number.trim(),
-    };
-
-    dispatch(addContact(newContact));
+    dispatch(addContact({ id: `id-${Date.now()}`, name, number }));
   };
 
   const handleFilterChange = (event) => {
     dispatch(setFilter(event.target.value.toLowerCase()));
   };
 
+  // Filter contacts based on filter value
   const filteredContacts = contacts.filter((contact) =>
     contact.name.toLowerCase().includes(filterValue)
   );
 
-  useEffect(() => {
-    const persistedContacts = persistor.getState().contacts; // Get persisted contacts
-    dispatch(loadContacts(persistedContacts)); // Dispatch the loadContacts action
-  }, [dispatch]);
-
+  const handleDeleteContact = (id) => {
+    dispatch(deleteContact(id));
+  };
 
   return (
     <div>
@@ -48,7 +36,7 @@ export const App = () => {
       <Form handleAddContact={handleAddContact} />
       <h2>Contacts</h2>
       <Search filter={filterValue} onFilterChange={handleFilterChange} />
-      <ContactList contacts={filteredContacts} onDeleteContact={deleteContact} />
+      <ContactList contacts={filteredContacts} onDeleteContact={handleDeleteContact} />
     </div>
   );
 };
