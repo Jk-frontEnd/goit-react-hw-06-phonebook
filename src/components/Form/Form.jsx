@@ -23,15 +23,6 @@ const Form = () => {
     if (name.trim() === '' || number.trim() === '') {
       return;
     }
-    const isContactExist = contacts.find(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-    if (isContactExist) {
-      alert(
-        `Contact with name ${name} already exists!`
-      );
-      return;
-    }
     
     const isNumberExist = contacts.find(
       contact => contact.number.replace(/\D/g, '') === number.replace(/\D/g, '')
