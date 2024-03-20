@@ -4,6 +4,14 @@ import { getContacts, getFilter } from '../../redux/select';
 import { ContactElem } from '../ContactElem/ContactElem'; 
 import { useSelector } from 'react-redux';
 
+
+const filteredContactsList = (contacts, filter) => {
+  const normalizedFilter = filter.toLowerCase();
+  return contacts.filter(contact =>
+    contact.name.toLowerCase().includes(normalizedFilter)
+  );
+};
+
 const ContactList = () => {
   const contacts = useSelector(getContacts);
   const filter = useSelector(getFilter);
@@ -21,15 +29,7 @@ const ContactList = () => {
   );
 };
 
-const filteredContactsList = ({ contacts, filter }) => {
-  const normalizedFilter = typeof filter === 'string' ? filter.toLowerCase() : '';
-  if (contacts && Array.isArray(contacts)) {
-    return contacts.filter(contact =>
-      contact.name && typeof contact.name === 'string' && contact.name.toLowerCase().includes(normalizedFilter)
-    );
-  } else {
-    return []; 
-  }
-};
+
+
 
 export { ContactList };
