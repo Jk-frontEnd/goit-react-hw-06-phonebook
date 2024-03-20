@@ -1,7 +1,7 @@
 import React from 'react';
 import css from './ContactList.module.css';
 import { getContacts, getFilter } from '../../redux/select';
-import {ContactElem} from '../ContactElem/ContactElem'; 
+import { ContactElem } from '../ContactElem/ContactElem'; 
 import { useSelector } from 'react-redux';
 
 const ContactList = () => {
@@ -21,9 +21,8 @@ const ContactList = () => {
   );
 };
 
-
-const filteredContactsList = ({contacts, filter}) => {
-  const normalizedFilter = filter ? filter.toLowerCase() : '';
+const filteredContactsList = (contacts, filter) => {
+  const normalizedFilter = typeof filter === 'string' ? filter.toLowerCase() : '';
   return contacts.filter(contact =>
     contact.name && contact.name.toLowerCase().includes(normalizedFilter)
   );
