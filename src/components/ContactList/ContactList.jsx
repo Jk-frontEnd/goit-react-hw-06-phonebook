@@ -20,12 +20,12 @@ const ContactList = () => {
     </div>
   );
 };
-
-const filteredContactsList = (contacts, filter) => {
+const filteredContactsList = ({ contacts, filter }) => {
   const normalizedFilter = typeof filter === 'string' ? filter.toLowerCase() : '';
   return contacts.filter(contact =>
-    contact.name && contact.name.toLowerCase().includes(normalizedFilter)
+    contact.name && typeof contact.name === 'string' && contact.name.toLowerCase().includes(normalizedFilter)
   );
 };
+
 
 export { ContactList };
