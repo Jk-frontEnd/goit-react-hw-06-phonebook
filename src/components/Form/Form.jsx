@@ -24,13 +24,25 @@ const Form = () => {
       return;
     }
     
+    const normalizePhoneNumber = phoneNumber => phoneNumber.replace(/\D/g, '');
+
     const isNumberExist = contacts.find(
-      contact => contact.number.replace(/\D/g, '') === number.replace(/\D/g, '')
+      contact => normalizePhoneNumber(contact.number) === normalizePhoneNumber(number)
     );
 
     if (isNumberExist) {
       alert(
         `Number ${number} is already in contacts!`
+      );
+      return;
+    }
+    
+    const isNameExist = contacts.find(contact => contact.name === name);
+
+
+    if (isNameExist) {
+      alert(
+        `Name ${name} is already in contacts!`
       );
       return;
     }
