@@ -1,26 +1,31 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import storage from 'redux-persist/lib/storage';
-import { persistStore, persistReducer } from 'redux-persist';
-import { contactsReducer } from './contactSlice';
+import { configureStore } from '@reduxjs/toolkit';
+import {
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import { contactsReducer } from './contactsSlice';
 import { filterReducer } from './filterSlice';
 
-const persistConfig = {
-  key: 'root',
-  storage,
-  whitelist: ['contacts'], // Only contacts slice will be persisted
-};
-
-const persistedReducer = persistReducer(
-  persistConfig,
-  combineReducers({ contacts: contactsReducer, filter: filterReducer })
-);
-
+// Создание хранилища Redux с помощью configureStore
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: {
+    contacts: contactsReducer, // Редюсер для управления состоянием контактов
+    filter: filterReducer, // Редюсер для управления состоянием фильтра
+  },
+
+  // Применение middleware с помощью getDefaultMiddleware
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
-      serializableCheck: false,
+      serializableCheck: {
+        ignoreActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
     }),
 });
 
+// Создание персистентного хранилища, которое сохраняет состояние хранилища Redux при перезагрузке страницы
 export const persistor = persistStore(store);

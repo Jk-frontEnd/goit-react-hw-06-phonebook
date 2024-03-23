@@ -1,22 +1,23 @@
 import React from 'react';
 import css from './ContactList.module.css';
 import { getContacts, getFilter } from '../../redux/select';
-import {ContactElem} from '../ContactElem/ContactElem'; 
+import { ContactElem } from '../ContactElem/ContactElem'; 
 import { useSelector } from 'react-redux';
-
 
 const ContactList = () => {
   const contacts = useSelector(getContacts);
   const filter = useSelector(getFilter);
 
+  // Provide a default value for filter if it is undefined
+  const normalizedFilter = filter ? filter.toLowerCase() : '';
+
   const filteredContactsList = (contacts, filter) => {
-    const normalizedFilter = filter.toLowerCase();
     return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter)
+      contact.name.toLowerCase().includes(filter)
     );
   };
 
-  const filteredContacts = filteredContactsList(contacts, filter);
+  const filteredContacts = filteredContactsList(contacts, normalizedFilter);
 
   return (
     <div className={css.contBox}>
