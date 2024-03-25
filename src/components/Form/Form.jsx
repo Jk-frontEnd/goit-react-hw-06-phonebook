@@ -24,11 +24,8 @@ const Form = () => {
       return;
     }
     
-    const normalizePhoneNumber = phoneNumber => phoneNumber.replace(/\D/g, '');
 
-    const isNumberExist = contacts.find(
-      contact => normalizePhoneNumber(contact.number) === normalizePhoneNumber(number)
-    );
+    const isNumberExist = contacts.find(contact => contact.number === number);
 
     if (isNumberExist) {
       alert(
